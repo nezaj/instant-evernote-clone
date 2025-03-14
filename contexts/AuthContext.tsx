@@ -1,8 +1,9 @@
 // contexts/AuthContext.tsx
-import { createContext, useContext, ReactNode, useState, useEffect } from 'react';
+import { createContext, useContext, ReactNode, useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import { db } from '../lib/db';
 import { AuthContextType } from '../types';
+import { seedUserWithOnboardingNotes } from '../lib/onboarding';
 
 // Create auth context with default values
 const AuthContext = createContext<AuthContextType>({
@@ -24,6 +25,7 @@ interface AuthProviderProps {
 export function AuthProvider({ children }: AuthProviderProps) {
   const router = useRouter();
   const [sentEmail, setSentEmail] = useState<string | null>(null);
+  const previousUserRef = useRef<string | null>(null);
 
   // Get auth state from InstantDB
   const { isLoading, user, error } = db.useAuth();
@@ -60,6 +62,41 @@ export function AuthProvider({ children }: AuthProviderProps) {
       throw error;
     }
   };
+
+  // Check if user is new and create onboarding notes
+  useEffect(() => {
+    const checkUserAndCreateNotes = async () => {
+      // If we have a user and didn't have one before
+      if (user && user.id && previousUserRef.current !== user.id) {
+        try {
+          // Query to check if user has any notes already
+          const { data } = await db.queryOnce({
+            notes: {
+              $: {
+                where: { 'creator.id': user.id },
+                limit: 1
+              }
+            }
+          });
+
+          // If the user has no notes, they're likely new
+          if (!data.notes || data.notes.length === 0) {
+            console.log('Creating onboarding notes for new user');
+            await seedUserWithOnboardingNotes(user);
+          }
+
+          // Update the previous user ref
+          previousUserRef.current = user.id;
+        } catch (error) {
+          console.error('Error checking user notes:', error);
+        }
+      }
+    };
+
+    if (!isLoading && user) {
+      checkUserAndCreateNotes();
+    }
+  }, [isLoading, user]);
 
   // Redirect to login if not authenticated
   useEffect(() => {
