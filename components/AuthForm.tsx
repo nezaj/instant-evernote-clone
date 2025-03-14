@@ -23,7 +23,7 @@ export default function AuthForm({ onSuccess }: AuthFormProps) {
     try {
       await signIn(email);
       setSentEmail(true);
-    } catch (err) {
+    } catch {
       setError('Failed to send verification code. Please try again.');
     } finally {
       setIsLoading(false);
@@ -39,7 +39,7 @@ export default function AuthForm({ onSuccess }: AuthFormProps) {
     try {
       await verifyCode(email, code);
       if (onSuccess) onSuccess();
-    } catch (err) {
+    } catch {
       setError('Invalid code. Please try again.');
       setCode('');
     } finally {
@@ -101,7 +101,7 @@ export default function AuthForm({ onSuccess }: AuthFormProps) {
           <form onSubmit={handleCodeSubmit} className="space-y-4">
             <div className="mb-4">
               <p className="mb-3 text-gray-600">
-                We've sent a verification code to <strong>{email}</strong>
+                We sent a verification code to <strong>{email}</strong>
               </p>
               <label htmlFor="code" className="block mb-2 text-sm font-medium text-gray-700">
                 Verification Code

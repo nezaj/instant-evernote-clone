@@ -4,7 +4,6 @@ import { useRouter } from 'next/router';
 import Layout from '../components/Layout';
 import AuthForm from '../components/AuthForm';
 import { useAuth } from '../contexts/AuthContext';
-import Image from 'next/image';
 
 export default function Login() {
   const { isAuthenticated, isLoading } = useAuth();
