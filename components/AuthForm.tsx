@@ -86,10 +86,7 @@ export default function AuthForm({ onSuccess }: AuthFormProps) {
 
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
-              Already have an account?{" "}
-              <button className="text-green-600 hover:underline font-medium">
-                Log in
-              </button>
+              Go forth and prosper :)
             </p>
           </div>
         </div>

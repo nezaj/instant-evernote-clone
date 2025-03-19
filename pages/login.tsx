@@ -50,10 +50,6 @@ export default function Login() {
 
           <div className="w-full max-w-md">
             <AuthForm onSuccess={handleLoginSuccess} />
-
-            <div className="mt-6 text-center text-gray-600">
-              By continuing, you agree to our Terms of Service and Privacy Policy.
-            </div>
           </div>
         </div>
 
